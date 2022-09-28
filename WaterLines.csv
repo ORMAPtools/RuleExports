@@ -1,0 +1,19 @@
+﻿NAME,DESCRIPTION,TYPE,SUBTYPE,FIELD,ISEDITABLE,TRIGGERINSERT,TRIGGERDELETE,TRIGGERUPDATE,SCRIPTEXPRESSION,ERRORNUMBER,ERRORMESSAGE,EXCLUDECLIENTEVALUATION,ISENABLED,BATCH,SEVERITY,TAGS,CATEGORY,CHECKPARAMETERS
+GetMapNumber,Assigns the MapNumber to the feature when it is added or updated.,CALCULATION,,MAPNUMBER,True,True,False,True,"// When creating a anno get map number from mapindex polygon layer 
+// Within will return the map number value from the map index.
+// If none found nothing is returned 
+
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""MapNumber""])
+var fsIntersectMap = within(fsMapIndex, Centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+return MapIndex.Mapnumber",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+GetMapScale,Assigns the MapScale from MapIndex to the feature when it is added or updated.,CALCULATION,,MAPSCALE,True,True,False,True,"// Get Mapscale from mapindex polygon layer  
+// Within will return the mapscale value from the map index.
+// If none found nothing is returned
+
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""MapScale""])
+var fsIntersectMap = within(fsMapIndex, Centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+return MapIndex.MapScale",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"

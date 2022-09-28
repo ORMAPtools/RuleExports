@@ -1,0 +1,19 @@
+﻿NAME,DESCRIPTION,TYPE,SUBTYPE,FIELD,ISEDITABLE,TRIGGERINSERT,TRIGGERDELETE,TRIGGERUPDATE,SCRIPTEXPRESSION,ERRORNUMBER,ERRORMESSAGE,EXCLUDECLIENTEVALUATION,ISENABLED,BATCH,SEVERITY,TAGS,CATEGORY,CHECKPARAMETERS
+GetMapNumber,Assigns the MapNumber to the feature when it is added. ,CALCULATION,,MAPNUMBER,True,True,False,False,"// When creating a anno get map number from mapindex polygon layer 
+// Within will return the map number value from the map index.
+// If none found nothing is returned 
+
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""MapNumber""])
+var fsIntersectMap = within(fsMapIndex, Centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+return MapIndex.Mapnumber",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+MapScale Rule,Check if Mapindex Mapscale matches annoscale. ,CONSTRAINT,,,True,True,False,False,"// When creating a anno check mapscale 400 Scale map  
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""MapScale""])
+var fsIntersectMap = Intersects(fsMapIndex,$feature)
+var MapIndex = first(fsIntersectMap)  
+if (MapIndex == null) return false;
+if (MapIndex.MapScale == 4800) 
+    return true; 
+else
+    return  false;",400,Error - MapIndex Mapscale does not match annoscale.,False,False,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"

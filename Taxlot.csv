@@ -1,0 +1,51 @@
+﻿NAME,DESCRIPTION,TYPE,SUBTYPE,FIELD,ISEDITABLE,TRIGGERINSERT,TRIGGERDELETE,TRIGGERUPDATE,SCRIPTEXPRESSION,ERRORNUMBER,ERRORMESSAGE,EXCLUDECLIENTEVALUATION,ISENABLED,BATCH,SEVERITY,TAGS,CATEGORY,CHECKPARAMETERS
+GetMapNumber,Gets MapNumber from MapIndex ,CALCULATION,,MapNumber,True,True,False,True,"// Get map number from mapindex polygon layer 
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""MapNumber""])
+var fsIntersectMap = within(fsMapIndex,centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+if (MapIndex.Mapnumber == null) return {""errorMessage"": ""MapNumber is empty""} 
+return MapIndex.Mapnumber",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+GetCounty,Gets County Number from MapIndex,CALCULATION,,County,True,True,False,True,"// Get map number from mapindex polygon layer 
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""County""])
+var fsIntersectMap = within(fsMapIndex,centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+if (MapIndex.County == null) return {""errorMessage"": ""County is empty""} 
+return MapIndex.County",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+GetORMapNum,Gets ORMAPNum from MapUndex ,CALCULATION,,ORMapNum,True,True,False,True,"// Get map number from mapindex polygon layer 
+var fsMapIndex = FeatureSetByName($datastore,""MapIndex"",[""ORMapNum""])
+var fsIntersectMap = within(fsMapIndex,centroid($feature))
+var MapIndex = first(fsIntersectMap) 
+if (MapIndex == null) return {""errorMessage"": ""No Map Index Feature Found""} 
+if (MapIndex.ORMapNum == null) return {""errorMessage"": ""ORMapNum is empty""} 
+return MapIndex.ORMapNum",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+CalcORTaxlot,Calc ORTaxlot from ORMAPNUM and Taxlot,CALCULATION,,ORTaxlot,True,True,False,True,"// Calc ORtaxlot from ormapnum and taxlot
+
+var Taxlot = text($feature.Taxlot)
+var OrMapNumber = text($feature.ORMapNum)
+if (!IsEmpty($feature.Taxlot))  
+{
+  var CTx = count($feature.Taxlot)
+  var ORTaxlot = """"
+  if (CTx == 5) ORTaxlot = $feature.ORMapNum + $feature.Taxlot
+  if (CTx == 4) ORTaxlot = $feature.ORMapNum + ""0"" + $feature.Taxlot
+  if (CTx == 3) ORTaxlot = $feature.ORMapNum + ""00"" + $feature.Taxlot
+  return ORTaxlot 
+}",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+CalcMapTaxlot,Calc MapTaxlot from MapNumber and Taxlot ,CALCULATION,,MapTaxlot,True,True,False,True,"// Calc MapTaxlot from MapNumber and Taxlot 
+// NOTE: This is a county specific rule!!! 
+
+var Taxlot = text($feature.Taxlot)
+var MapNumber = text($feature.MapNumber)
+if (!IsEmpty($feature.Taxlot))  
+{
+  var CTx = count($feature.Taxlot)
+  var MapTaxlot = """"
+  var MapNum = replace (MapNumber,""."","""")
+  if (CTx == 5) MapTaxlot = MapNum + $feature.Taxlot
+  if (CTx == 4) MapTaxlot = MapNum + "" "" + $feature.Taxlot
+  if (CTx == 3) MapTaxlot = MapNum + ""  "" + $feature.Taxlot
+  return MapTaxlot 
+}",,,False,True,False,,,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
+MUST HAVE A RECORD,Parcel features must be associated to the record that created them,VALIDATION,,,True,False,False,False,return !IsEmpty($feature.CreatedByRecord);,1000,MUST HAVE A RECORD,True,False,True,5,Record,,"{""type"":""PropertySet"",""propertySetItems"":[]}"
